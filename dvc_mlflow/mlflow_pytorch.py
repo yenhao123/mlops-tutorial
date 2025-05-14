@@ -1,6 +1,6 @@
-import os
 import pandas as pd
 import numpy as np
+
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -14,14 +14,15 @@ from torch.utils.data import TensorDataset, DataLoader
 import mlflow
 import mlflow.pytorch
 
+
 # ======== 1. 載入與儲存資料（可追蹤） ========
+
 # 從 CSV 讀入資料
 df = pd.read_csv("data/diabetes.csv")
 X = df.drop(columns=["target"]).values
 y = df["target"].values
 feature_names = df.columns.drop("target")
 
-print(X[0,0])
 print("✅ 已從 data/diabetes.csv 載入資料")
 
 # ======== 2. 資料預處理 ========

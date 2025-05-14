@@ -31,11 +31,13 @@
 cp data/diabetes_v1.csv data/diabetes.csv
 dvc add data/diabetes.csv
 git commit -am "Add v1 data"
+git push
 
 # 版本 2
 cp data/diabetes_v2.csv data/diabetes.csv
 dvc add data/diabetes.csv
 git commit -am "Add v2 data"
+git push
 ```
 
 ### ✅ 切換資料版本
@@ -51,5 +53,9 @@ dvc checkout    # 還原 v2 資料
 ```
 
 > `dvc checkout` 會根據當前 Git commit 的 `.dvc` 文件，還原對應版本的資料檔案。
+
+### ✅ 驗證切換後的資料版本是否一致
+1. 執行 check_data_version.py
+2. 判斷是否 Hash match
 
 
