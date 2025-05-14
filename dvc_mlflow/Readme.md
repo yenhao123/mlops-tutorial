@@ -1,17 +1,24 @@
-## 📌 1. 訓練模型
+3 Tutorials
+1. 使用 MLflow 紀錄模型參數
+2. 使用 DVC 切換不同資料版本
+3. 使用  DVC + MLflow 管理資料與實驗版本
 
-請依序執行以下步驟：
+## 0. RequirementS
 
-1. 載入資料並前處理：
+1. 準備資料：
 
-   ```bash
-   python load_data.py
-   ```
-2. 使用 PyTorch 訓練模型並記錄於 MLflow：
+    ```bash
+    python load_data.py
+    ```
+2. 準備模型 `train.py`
 
-   ```bash
-   python train.py
-   ```
+## 📌 1. 使用 MLflow 紀錄模型參數
+
+1. 訓練模型前使用 MLflow 記錄於參數：
+
+    ```bash
+    python train.py
+    ```
 
 ---
 
@@ -47,11 +54,11 @@ git push -u origin data-v2
 ### ✅ 切換資料版本
 
 ```bash
-# 切換到版本 1 的 commit
+# 切換到版本 1
 git checkout data-v1
 dvc checkout    # 還原 v1 資料
 
-# 切換到版本 2 的 commit
+# 切換到版本 2
 git checkout data-v2
 dvc checkout    # 還原 v2 資料
 ```
@@ -86,6 +93,7 @@ dvc checkout    # 還原 v2 資料
 │   └── diabetes.csv            # 透過 DVC 管理的資料
 ├── params.yaml                 # 訓練參數（learning rate、epochs）
 ├── train.py                    # 主要訓練程式
+├── finetune.py                 # finetune 程式
 ├── dvc.yaml                    # DVC pipeline 定義
 ├── dvc.lock                    # pipeline 結果紀錄
 ├── mlruns/                     # MLflow 儲存實驗結果
@@ -93,9 +101,7 @@ dvc checkout    # 還原 v2 資料
     └── model.pt                # 模型輸出（DVC 管理）
 ```
 
----
-
-### 📄 1. `params.yaml`：管理超參數
+`params.yaml`：管理超參數
 
 ```yaml
 train:
@@ -105,8 +111,9 @@ train:
 
 ---
 
-### ⚙️ 3. `dvc.yaml`：定義 pipeline
+`dvc.yaml`：定義 pipeline
 
+如何產生 `dvc.yaml` + `dvc.lock`?
 ```bash
 dvc stage add -n train --force `
   -d train.py `
@@ -115,16 +122,13 @@ dvc stage add -n train --force `
   -p train.lr,train.epochs `
   python train.py
 ```
-
-產生 `dvc.yaml` + `dvc.lock`，用來管理：
-
-* 哪些輸入（`-d`）決定輸出
+>* 哪些輸入（`-d`）決定輸出
 * 哪些超參數（`-p`）追蹤
 * 哪些是輸出（`-o`）模型結果
 
 ---
 
-### 🚀 4. 執行訓練實驗
+### 🚀 執行訓練實驗
 
 ```bash
 dvc repro
@@ -135,9 +139,7 @@ dvc exp run --set-param train.lr=0.01
 dvc exp show
 ```
 
----
-
-### 📦 5. 使用 MLflow 查看實驗記錄
+### 📦 使用 MLflow 查看實驗記錄
 
 ```bash
 mlflow ui
@@ -147,7 +149,7 @@ mlflow ui
 
 ---
 
-### 🔁 6. 版本切換與模型取用
+### 🔁 資料切換
 
 ```bash
 # 建立版本 1 分支
@@ -167,16 +169,24 @@ git commit -am "Add data version 2"
 git push -u origin data-v2.1
 ```
 
-切換到某個資料 + 模型版本：
+切換到某個資料：
 
 ```bash
-git checkout data-v1
+# 切換到版本 1
+git checkout data-v1.1
+dvc checkout
+
+# 切換到版本 2
+git checkout data-v2.1
 dvc checkout
 ```
 
-然後使用模型：
+### 🔁 模型取用
+
+切換到某個模型版本：
+>`finetune.py`
 
 ```python
-model.load_state_dict(torch.load("models/model.pt"))
-model.eval()
+model_uri = f"runs:/{run_id}/model"
+model = mlflow.pytorch.load_model(model_uri)
 ```

@@ -13,6 +13,7 @@ import mlflow.pytorch
 # 讀取參數
 with open("params.yaml", "r") as f:
     params = yaml.safe_load(f)
+    
 lr = params["train"]["lr"]
 epochs = params["train"]["epochs"]
 run_id = params["train"].get("base_run_id")  # 從 params.yaml 可設定要接續哪個實驗
