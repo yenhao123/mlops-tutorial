@@ -176,3 +176,40 @@ dvc checkout
 model_uri = f"runs:/{run_id}/model"
 model = mlflow.pytorch.load_model(model_uri)
 ```
+
+## 📌 4. 使用 Wrapper 讓 MLflow 更易用
+
+### ❓ 問題：為什麼需要 Wrapper？
+
+MLflow 雖然功能強大，但需要在訓練程式中手動嵌入大量 logging 語法
+---
+
+### 📦 準備內容：
+
+* `mlflow_wrapper.py`：封裝 MLflow 操作的函式
+* `params.yaml`：記錄訓練參數
+
+範例 `params.yaml`（若尚未建立）：
+
+```yaml
+train:
+  lr: 0.01
+  epochs: 100
+```
+
+---
+
+### 🧪 使用方式：
+
+將原本的訓練入口改為：
+
+```python
+from mlflow_wrapper import run_with_mlflow_from_yaml
+
+run_with_mlflow_from_yaml(
+    script="train.py",
+    yaml_path="params.yaml",
+    section="train",
+    artifacts=["models/model.pt"]
+)
+```
