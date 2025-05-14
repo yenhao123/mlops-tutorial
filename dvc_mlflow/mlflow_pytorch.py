@@ -21,6 +21,7 @@ X = df.drop(columns=["target"]).values
 y = df["target"].values
 feature_names = df.columns.drop("target")
 
+print(X[0,0])
 print("✅ 已從 data/diabetes.csv 載入資料")
 
 # ======== 2. 資料預處理 ========
