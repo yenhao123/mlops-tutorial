@@ -1,0 +1,4 @@
+train:
+  lr: 0.0001
+  epochs: 50
+  base_run_id: "49aa38723cf44473ac719838b6aa6c1e" # finetune model_id
