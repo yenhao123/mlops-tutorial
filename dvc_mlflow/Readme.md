@@ -1,7 +1,3 @@
-以下是你需求整理後的 **README.md 草稿**，涵蓋 3 種教學主題：MLflow、DVC 資料版本、DVC + MLflow 實驗管理。可直接放入 GitHub 專案根目錄：
-
----
-
 # 📚 MLOps Tutorials: DVC + MLflow 實作指南
 
 本專案展示如何使用 DVC 和 MLflow 搭配進行機器學習實驗管理，涵蓋：
