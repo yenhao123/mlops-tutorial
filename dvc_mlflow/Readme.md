@@ -10,7 +10,7 @@
 2. 使用 PyTorch 訓練模型並記錄於 MLflow：
 
    ```bash
-   python mlflow_pytorch.py
+   python train.py
    ```
 
 ---
@@ -78,7 +78,7 @@ dvc checkout    # 還原 v2 資料
 
 ## 3. 使用  DVC + MLflow 管理資料與實驗版本
 
-### 🧱 專案目錄結構範例
+### 🧱 專案目錄結構
 
 ```
 .
@@ -105,9 +105,6 @@ train:
 
 ---
 
-### 🧠 2. `train.py`：訓練 + MLflow 紀錄 + 輸出模型
----
-
 ### ⚙️ 3. `dvc.yaml`：定義 pipeline
 
 ```bash
@@ -131,11 +128,8 @@ dvc stage add -n train --force `
 
 ```bash
 dvc repro
-```
 
-或用 DVC 實驗功能（跑不同超參數）：
-
-```bash
+# 跑不同超參數
 dvc exp run --set-param train.lr=0.001
 dvc exp run --set-param train.lr=0.01
 dvc exp show
@@ -154,6 +148,24 @@ mlflow ui
 ---
 
 ### 🔁 6. 版本切換與模型取用
+
+```bash
+# 建立版本 1 分支
+git checkout main   # 回到主線
+git checkout -b data-v1.1
+cp data/diabetes_v1.csv data/diabetes.csv
+dvc add data/diabetes.csv
+git commit -am "Add data version 1"
+git push -u origin data-v1.1
+
+# 建立版本 2 分支
+git checkout main   # 回到主線
+git checkout -b data-v2.1
+cp data/diabetes_v2.csv data/diabetes.csv
+dvc add data/diabetes.csv
+git commit -am "Add data version 2"
+git push -u origin data-v2.1
+```
 
 切換到某個資料 + 模型版本：
 
