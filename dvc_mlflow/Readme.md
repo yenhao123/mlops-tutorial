@@ -58,4 +58,4 @@ dvc checkout    # 還原 v2 資料
 1. 執行 check_data_version.py
 2. 判斷是否 Hash match
 
-
+![alt text](images/image.png)
