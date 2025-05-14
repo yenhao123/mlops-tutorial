@@ -7,6 +7,7 @@
 1. 使用 MLflow 紀錄模型參數與指標
 2. 使用 DVC 切換不同資料版本
 3. 使用 DVC + MLflow 管理整體實驗與資料版本
+4. 使用 Wrapper 讓 MLflow 更易用
 
 ---
 
