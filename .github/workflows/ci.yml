@@ -38,7 +38,5 @@ jobs:
     - name: Test FastAPI
       run: |
         uvicorn app.main:app --host 127.0.0.1 --port 8000 &
-        sleep 5
-        curl -X 'POST' http://127.0.0.1:8000/predict \
-          -H 'Content-Type: application/json' \
-          -d '{"features":[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]}'
+        sleep 5 
+        python3 test/test.py
