@@ -1,16 +1,24 @@
-name: CI
+name: FastAPI CI
 
 on:
   push:
+    paths:
+      - 'fastapi/**'
     branches: [ main ]
   pull_request:
+    paths:
+      - 'fastapi/**'
     branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: fastapi  # 👈 在 fastapi 資料夾中執行所有命令
+
     steps:
-    - name: Checkout repo
+    - name: Checkout code
       uses: actions/checkout@v3
 
     - name: Set up Python
@@ -20,20 +28,17 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Lint (Optional)
+    - name: Lint
       run: |
         pip install flake8
         flake8 app --max-line-length=120
 
-    - name: Test run API
+    - name: Test FastAPI
       run: |
         uvicorn app.main:app --host 127.0.0.1 --port 8000 &
         sleep 5
-        curl -X 'POST' \
-          'http://127.0.0.1:8000/predict' \
-          -H 'accept: application/json' \
+        curl -X 'POST' http://127.0.0.1:8000/predict \
           -H 'Content-Type: application/json' \
           -d '{"features":[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]}'
