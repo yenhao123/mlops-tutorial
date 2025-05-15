@@ -40,3 +40,5 @@ docker run -p 8000:8000 fastapi-ml
 ## 🔍 測試 API
 1. 啟動 API
 2. 執行 test/test.py
+
+test
