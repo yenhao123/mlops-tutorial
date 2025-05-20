@@ -51,7 +51,7 @@ MLOps（Machine Learning Operations）是 DevOps 的一種延伸，專門用於�
 
 #### 📈 Monitor 階段
 
-\*\*目的：\*\*追蹤線上模型效能與異常狀況，以支援 retrain 或 rollback
+目的：追蹤線上模型效能與異常狀況，以支援 retrain 或 rollback
 
 **監控重點指標：**
 
