@@ -1,46 +1,58 @@
-# 🔍 FastAPI Monitoring with Prometheus + Grafana
+# 🔍 使用 Prometheus + Grafana 監控 FastAPI
 
-This setup enables monitoring your FastAPI application's metrics (e.g. request count, prediction distribution, error rate) using **Prometheus** for metric collection and **Grafana** for visualization.
+這個架構可用於監控 FastAPI 應用程式的各種指標（例如請求次數、預測結果分布、錯誤率），其中：
+
+- **Prometheus** 負責定期收集 `/metrics` 中暴露的數據
+- **Grafana** 則用來進行圖形化顯示與觀察趨勢
 
 ---
 
-## 📁 Folder Structure
+## 📁 專案目錄結構
 
 ```
+
 your-project/
 ├── fastapi/
-│   └── app.main\_wmonitor.py     # FastAPI app exposing /metrics
+│   └── app.main\_wmonitor.py     # FastAPI 程式，提供 /metrics
+│   └── models/
+│       └── model.pt                 # 預訓練模型（需自行提供）
+│   └── test/
+│       └── test.py                  # 測試 FastAPI API 的腳本
+│   └── requirements.txt             # Python 套件清單
+│   └── Dockerfile                   # FastAPI 的 Docker 打包檔
 ├── monitoring/
-│   ├── prometheus.yml
-│   └── docker-compose.yml
+│   ├── prometheus.yml           # Prometheus 設定檔
+│   └── docker-compose.yml       # 啟動 Prometheus + Grafana 的 Docker 配置
+
 ```
 
 ---
 
-## ⚙️ Step 1: Configure Prometheus
+## ⚙️ 步驟一：設定 Prometheus
 
 ### `monitoring/prometheus.yml`
 
 ```yaml
+# prometheus.yml 裡加上你的 FastAPI
 global:
   scrape_interval: 5s
   
 scrape_configs:
   - job_name: "fastapi"
     static_configs:
-      - targets: ["host.docker.internal:8000"]
+      - targets: ["fastapi:8000"]
 ```
 
->Note: `host.docker.internal` allow docker to connect Host
+> 📌 說明：`host.docker.internal` 是 Docker container 連接宿主機的方式（適用於 Windows/macOS）
 
 ---
 
-## 🐳 Step 2: Run Prometheus + Grafana with Docker
+## 🐳 步驟二：使用 Docker 啟動 Prometheus + Grafana
 
 ### `monitoring/docker-compose.yml`
 
 ```yaml
-version: '3'
+version: "3"
 
 services:
   prometheus:
@@ -56,7 +68,7 @@ services:
       - "3000:3000"
 ```
 
-### Launch the services:
+### 啟動方式：
 
 ```bash
 cd monitoring
@@ -65,56 +77,62 @@ docker compose up -d
 
 ---
 
-## 🚀 Step 3: Launch Your FastAPI App
+## 🚀 步驟三：啟動 FastAPI 服務
 
-In another terminal:
+在另一個終端機執行：
 
 ```bash
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Make sure your FastAPI app exposes a `/metrics` endpoint using `prometheus_client`.
+請確保你的 FastAPI 中有透過 `prometheus_client` 暴露 `/metrics`。
 
 ---
 
-## 🌐 Step 4: Access the Interfaces
+## 🌐 步驟四：開啟以下介面
 
 * **Prometheus**: [http://localhost:9090](http://localhost:9090)
 * **Grafana**: [http://localhost:3000](http://localhost:3000)
-  * Default login: `admin / admin`
+
+  * 預設帳號密碼：`admin / admin`
 
 ---
 
-## 📊 Step 5: Configure Grafana
+## 📊 步驟五：設定 Grafana Dashboard
 
-1. Add **Prometheus** as a data source (`http://prometheus:9090` inside Docker, or `http://localhost:9090` if external).
-2. Create a new **Dashboard** → **Add Panel**.
-3. Use PromQL queries to visualize metrics:
+1. 點選左側齒輪 → Data Sources → 新增 **Prometheus**
 
-### Sample PromQL queries:
+   * URL：`http://prometheus:9090`（Docker 內部）或 `http://localhost:9090`（外部）
+2. 建立新 Dashboard → 新增 Panel
+3. 使用 PromQL 查詢指標：
 
-* RMSE:
+### PromQL 查詢範例：
 
-  ```promql
-  validation_rmse_sum
-  ```
+#### ✅ RMSE（模型預測誤差）總和
 
-* 預測值的變化趨勢
+```promql
+validation_rmse_sum
+```
 
-    ```promql
-    histogram_quantile(0.5, rate(prediction_distribution_bucket[5m]))
-    ```
+#### ✅ 模型輸出預測值的中位數（Histogram Quantile）
 
-Note: 
-rate(X[5m]) 表示：計算最近 5 分鐘，X 的 每秒變化率，。
-histogram_quantile(0.5, ...): 中位數
+```promql
+histogram_quantile(0.5, rate(prediction_distribution_bucket[5m]))
+```
+
+> 📌 `rate(X[5m])`：計算最近 5 分鐘 X 每秒變化速率
+> 📌 `histogram_quantile(0.5, ...)`：計算中位數（P50），也可改為 P90、P95 觀察尾部
+
 ---
 
-## ✅ Summary
+## ✅ 工具與角色總覽
 
-| Tool       | Port | Role                       |
-| ---------- | ---- | -------------------------- |
-| FastAPI    | 8000 | API service with /metrics  |
-| Prometheus | 9090 | Scrapes and stores metrics |
-| Grafana    | 3000 | Visualizes metrics         |
+| 工具         | Port | 功能說明                           |
+| ---------- | ---- | ------------------------------ |
+| FastAPI    | 8000 | 提供 `/predict` 與 `/metrics` API |
+| Prometheus | 9090 | 抓取並儲存指標資料                      |
+| Grafana    | 3000 | 將指標視覺化、繪製圖表                    |
+
+```
+
 ---

@@ -1,7 +1,6 @@
-# prometheus.yml 裡加上你的 FastAPI
 global:
   scrape_interval: 5s
-  
+
 scrape_configs:
   - job_name: "fastapi"
     static_configs:
