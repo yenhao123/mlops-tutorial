@@ -134,5 +134,3 @@ histogram_quantile(0.5, rate(prediction_distribution_bucket[5m]))
 | Grafana    | 3000 | 將指標視覺化、繪製圖表                    |
 
 ```
-
----
